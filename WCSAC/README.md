@@ -62,7 +62,9 @@ CVaR refers to Conditional Value-at-Risk
 definition 2里直接改写了约束的公式，
 
 下图解释了worst case的含义
+
 ![Alt text](image-7.png)
+
 横轴是long-term cost C,纵轴是概率密度
 
 ## Worst-case actor
@@ -73,9 +75,11 @@ definition 2里直接改写了约束的公式，
 ![Alt text](image-9.png)
 
 一番推导得到
+
 ![Alt text](image-10.png)
 
 完整算法
+
 ![Alt text](image-11.png)
 
 # conclusion

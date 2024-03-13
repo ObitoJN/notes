@@ -10,6 +10,75 @@
   
   但是这篇论文主要讨论的是有限状态和动作的环境下这个算法的效果。
 
+
+
+## CAP
+### tabular
+#### conservative penalty
+假设V<sub>c</sub>属于βF,可以得到引理4.2，因而真实模型和预测模型的策略代价期望可以受（4）约束。
+![Alt text](image.png)
+
+这篇论文的做法就是将真实与预测模型之间的差距加入到代价函数中，得到一个保守的代价约束。
+
+d<sub>F</sub>的上限为u<sub>T</sub>
+![Alt text](image-1.png)
+
+接下来的问题是如何得到u，针对表格环境，作者提出的公式如下：
+![Alt text](image-2.png)
+
+更进一步的，为了中间过程中的策略也是安全的，将当前episode也加入到公式中，得到：
+![Alt text](image-3.png)
+
+作者在下面又提到了u的实际实现(n表示（s,a）的个数)
+![Alt text](image-4.png)
+
+
+#### Adaptive Cost Penalty
+由上面的u的实现引出了k值的设定问题，固定值比较死板，难以得到好的结果，所以就自适应地调整k。k的更新如下：
+
+![Alt text](image-5.png)
+
+细节上注意要保持k非负
+
+完整的CAP算法流程：
+
+![Alt text](image-6.png)
+
+
+###  CAP for High-Dimensional States
+主要基于统计的方法
+
+需要求解的问题：
+![Alt text](image-11.png)
+
+![Alt text](image-7.png)
+
+连续空间又分为两种，一个是基于状态的，一个是基于视觉观察的，主要是u的计算不同。
+
+
+基于状态：
+
+![Alt text](image-9.png)
+
+基于视觉观察：
+
+![Alt text](image-10.png)
+
+描述的比较简略，甚至都没有说明含义，几句话带过。
+
+但是实验对比主要是在连续空间
+
+
+## exp
+对比试验结果
+
+![Alt text](image-8.png)
+
+作者和PPO-Lag,FOCOPS进行了对比，实验结果表明CAP收敛得更快并且训练过程中违反限制更少
+
+个人认为这篇文章的测试环境比较少，对比的也少，并且对于连续情况下的实现说明有些简略。
+
+
 ## concept
 ### <font color=blue>MBRL</font>
 MBRL代表模型基于增强学习（Model-Based Reinforcement Learning）。它是一种强化学习方法，结合了模型学习和策略优化的思想。
@@ -49,55 +118,11 @@ IPM具有许多优点，例如它是一种统一的框架，可以适用于不�
 
 综上所述，积分概率度量（IPM）是一种用于衡量概率分布之间差异的方法，特别是Wasserstein距离在其中扮演重要角色。它在概率模型评估、生成模型训练和概率分布匹配等领域具有广泛的应用。
 
-## CAP
-### tabular
-#### conservative penalty
-假设V<sub>c</sub>属于βF,可以得到引理4.2，因而真实模型和预测模型的策略代价期望可以受（4）约束。
-![Alt text](image.png)
+### Hoeffding's inequality
+Hoeffding's inequality是一种用于概率论和统计学中的不等式，它提供了样本均值与其期望之间的概率界限。这个不等式由Wassily Hoeffding在1963年提出，并且在机器学习和数据科学领域中经常被使用。
 
-这篇论文的做法就是将真实与预测模型之间的差距加入到代价函数中，得到一个保守的代价约束。
+Hoeffding's inequality适用于具有独立同分布的随机变量的情况，这些随机变量的取值范围在一个有限区间内。不等式的形式如下：
 
-d<sub>F</sub>的上限为u<sub>T</sub>
-![Alt text](image-1.png)
+P(|X - E[X]| >= epsilon) <= 2 * exp(-2 * epsilon^2 * n)
 
-接下来的问题是如何得到u，针对表格环境，作者提出的公式如下：
-![Alt text](image-2.png)
-更进一步的，为了中间过程中的策略也是安全的，将当前episode也加入到公式中，得到：
-![Alt text](image-3.png)
-
-作者在下面又提到了u的实际实现，是比较简单的方法(n表示（s,a）中的个数)
-![Alt text](image-4.png)
-
-
-#### Adaptive Cost Penalty
-由上面的u的实现引出了k值的设定问题，固定值比较死板，难以得到好的结果，所以就自适应地调整k。k的更新如下：
-![Alt text](image-5.png)
-细节上注意要保持k非负
-
-完整的CAP算法流程：
-![Alt text](image-6.png)
-
-
-###  CAP for High-Dimensional States
-主要基于统计的方法
-![Alt text](image-7.png)
-连续空间又分为两种，一个是基于状态的，一个是基于视觉观察的，这两种空间中u的选择也不同。
-
-
-基于状态：
-![Alt text](image-9.png)
-
-基于视觉观察：
-![Alt text](image-10.png)
-
-描述的比较简略，甚至都没有说明含义，几句话带过。
-
-但是实验对比主要是在连续空间
-
-
-## exp
-对比试验结果
-![Alt text](image-8.png)
-作者和PPO-Lag,FOCOPS进行了对比，实验结果表明CAP收敛得更快并且训练过程中违反限制更少
-
-个人认为实验结果缺乏说服力，就自己的训练情况来看，不同环境对于不同算法的效果不一，未必越先进的效果就越好，这篇文章的测试环境比较少，对比的也少，并且对于连续情况下的实现说明有些简略。
+其中，P表示概率，X是样本均值，E[X]是期望值，epsilon是一个正数，n是样本的数量。不等式的意义是，样本均值与其期望之间的差异大于等于epsilon的概率上界为exp(-2 * epsilon^2 * n)。换句话说，当样本数量n增加时，样本均值与期望值之间的差异大于等于epsilon的概率会减小。
